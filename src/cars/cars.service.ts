@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Car } from './car.entity';
+import { PAGE_SIZE } from '../constans';
 
 @Injectable()
 export class CarsService {
@@ -10,10 +11,13 @@ export class CarsService {
     private CarsRepository: Repository<Car>,
   ) {}
 
-  async findAll(): Promise<Car[]> {
-    // return new Promise<Car[]>((resolve) => {
-    //   resolve([]);
-    // });
-     return await this.CarsRepository.find();
+  async findCars(page: number, make?: string, model?: string): Promise<Car[]> {
+    const query = this.CarsRepository.createQueryBuilder('Car');
+    if (make) query.where('Car.Make = :make', { make });
+    if (model) query.where('Car.Model = :model', { model });
+    query.limit(PAGE_SIZE);
+    query.offset((page - 1) * PAGE_SIZE);
+
+    return await query.getMany();
   }
 }
