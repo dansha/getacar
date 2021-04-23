@@ -3,9 +3,11 @@ import {
   Get,
   HttpException,
   Req,
+  Res,
   HttpStatus,
 } from '@nestjs/common';
-import { Request } from 'express';
+import { Request, Response } from 'express';
+import { Parser } from 'json2csv';
 import { Car } from './car.entity';
 import { CarsService } from './cars.service';
 
@@ -20,14 +22,17 @@ export class CarsController {
   constructor(private carsService: CarsService) {}
 
   @Get()
-  async findCars(@Req() request: Request): Promise<Car[]> {
+  async findCars(@Req() request: Request, @Res() response: Response) {
     const params = this.assertAndGetfindCarsParams(request.query);
 
-    return await this.carsService.findCars(
+    const jsonResult = await this.carsService.findCars(
       params.page,
       params.make,
       params.model,
     );
+
+    const csvResult = this.transformDataToCsv(jsonResult);
+    this.sendCsvFile(response, csvResult);
   }
 
   assertAndGetfindCarsParams(query): IFindCarsParams {
@@ -54,5 +59,18 @@ export class CarsController {
       model: model ? model.toString() : model,
     };
     return tmpRes;
+  }
+
+  transformDataToCsv(json: Car[]) {
+    const json2csvParser = new Parser();
+    const csv = json2csvParser.parse(json);
+
+    return csv;
+  }
+
+  sendCsvFile(response, csvResult) {
+    response.setHeader('Content-disposition', 'attachment; filename=data.csv');
+    response.set('Content-Type', 'text/csv');
+    response.status(200).send(csvResult);
   }
 }

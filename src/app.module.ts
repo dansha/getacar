@@ -9,17 +9,18 @@ import { CarsModule } from './cars/cars.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-    type: 'mysql',
-    host: 'localhost',
-    port: 3306,
-    username: 'dans',
-    password: '0122',
-    database: 'getacar',
-    entities: [Car],
-    //synchronize: true,
-  }),
+      name: 'default',
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: 'dans',
+      password: '0122',
+      database: 'getacar',
+      entities: [Car],
+      //synchronize: true,
+    }),
     CarsModule,
-],
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
