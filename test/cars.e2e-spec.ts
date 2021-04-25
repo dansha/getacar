@@ -48,7 +48,6 @@ describe('CarsController (e2e)', () => {
 
     const lastRow = carsArray[21].split(',');
     expect(lastRow[0]).toEqual('21');
-    //console.log(carsArray);
 
     return res;
   });
@@ -60,15 +59,13 @@ describe('CarsController (e2e)', () => {
       .expect(200);
 
     const carsArray = res.text.split('\n');
-    // expect(carsArray.length).toEqual(22);
-    // expect(carsArray[0]).toEqual('"id","make","model","color"\r');
+    expect(carsArray.length).toEqual(22);
+    expect(carsArray[0]).toEqual('"id","make","model","color"\r');
+    carsArray.splice(0, 1);
 
-    // const firstRow = carsArray[1].split(',');
-    // expect(firstRow[0]).toEqual('1');
-
-    // const lastRow = carsArray[21].split(',');
-    // expect(lastRow[0]).toEqual('21');
-    console.log(carsArray);
+    carsArray.forEach((row) => {
+      expect(row.split(',')[1]).toEqual('"Kia"');
+    });
 
     return res;
   });
